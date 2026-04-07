@@ -1,0 +1,11 @@
+{
+  "name": "via51-ecosistema",
+  "private": true,
+  "scripts": {
+    "gamma:dev": "npm run dev --prefix via51-gamma",
+    "gamma:build": "npm run build --prefix via51-gamma",
+    "alfa:dev": "npm run dev --prefix via51-alfa",
+    "beta:dev": "npm run dev --prefix via51-beta",
+    "install:all": "npm install --prefix via51-gamma && npm install --prefix via51-alfa && npm install --prefix via51-beta"
+  }
+}
