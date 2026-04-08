@@ -1,11 +1,25 @@
 {
-  "name": "via51-ecosistema",
+  "name": "via51-holding",
   "private": true,
   "scripts": {
-    "gamma:dev": "npm run dev --prefix via51-gamma",
-    "gamma:build": "npm run build --prefix via51-gamma",
-    "alfa:dev": "npm run dev --prefix via51-alfa",
-    "beta:dev": "npm run dev --prefix via51-beta",
-    "install:all": "npm install --prefix via51-gamma && npm install --prefix via51-alfa && npm install --prefix via51-beta"
+    "alfa": "npx vite via51-root",
+    "beta": "node via51-hub/index.js",
+    "gamma": "npx vite via51-gamma"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "lucide-react": "^0.300.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.2",
+    "@vitejs/plugin-react": "^4.0.0",
+    "autoprefixer": "^10.4.27",
+    "postcss": "^8.5.9",
+    "tailwindcss": "^4.2.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0",
+    "vite": "^4.5.0"
   }
 }

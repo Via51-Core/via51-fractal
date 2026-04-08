@@ -1,0 +1,9 @@
+{
+  "name": "@via51/hub",
+  "version": "1.0.0",
+  "description": "Almacenamiento y Gestión Digital Beta - Nivel 1",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc"
+  }
+}
