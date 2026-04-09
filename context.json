@@ -1,0 +1,15 @@
+{
+    "name": "via51-ecosistema",
+    "private": true,
+    "workspaces": [
+        "via51-root",
+        "via51-hub",
+        "via51-gamma"
+    ],
+    "scripts": {
+        "build": "npm run alfa:build",
+        "alfa:build": "npm run build -w via51-root",
+        "beta:build": "npm run build -w via51-hub",
+        "gamma:build": "npm run build -w via51-gamma"
+    }
+}
