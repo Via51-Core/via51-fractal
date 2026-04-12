@@ -1,18 +1,28 @@
-// via51-beta/src/core/engine/blackBox.ts
+// C:\via51-fractal\via51-beta\src\core\engine\blackBox.ts
 
-import { Validator, Processor, Orchestrator } from './modules';
+export interface StandardInput {
+    origin: string;
+    domain: string;
+    action: string;
+    payload: any;
+}
 
 export class Via51BlackBox {
-    public static async execute(input: StandardInput): Promise<StandardOutput> {
+    // VALIDADOR (Regla 4)
+    private static validate(input: StandardInput): boolean {
+        return !!(input.origin && input.action);
+    }
 
-        // 1. VALIDADOR: ¿Es estructuralmente correcto y tiene permisos?
-        const isValid = await Validator.check(input);
-        if (!isValid) throw new Error("CRITICAL_ERROR: Violación de Integridad");
+    // PROCESADOR (Regla 4)
+    public static async process(input: StandardInput): Promise<any> {
+        if (!this.validate(input)) throw new Error("INVALID_CORE_INPUT");
 
-        // 2. PROCESADOR: Transición de estados y reglas de negocio genéricas
-        const processedData = await Processor.run(input.action, input.payload);
-
-        // 3. ORQUESTADOR: Prepara la salida y registra en sys_events (Trazabilidad)
-        return Orchestrator.dispatch(processedData, input.origin);
+        // El motor procesa la carga útil sin juzgar el contenido
+        console.log(`[CORE] Procesando flujo para dominio: ${input.domain}`);
+        return {
+            processedAt: new Date().toISOString(),
+            status: 'STABLE',
+            data: input.payload
+        };
     }
 }

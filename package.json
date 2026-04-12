@@ -1,15 +1,16 @@
 {
-    "name": "via51-holding",
-    "private": true,
+    "name": "via51-fractal",
     "version": "1.0.0",
-    "workspaces": [
-        "via51-alfa",
-        "via51-beta",
-        "via51-gamma"
-    ],
     "scripts": {
-        "dev": "npm run dev --workspaces",
-        "build": "npm run build --workspaces",
-        "install-all": "npm install --workspaces"
+        "install:all": "npm install && cd via51-alfa && npm install && cd ../via51-beta && npm install && cd ../via51-gamma && npm install",
+        "dev:beta": "cd via51-beta && npx ts-node-dev src/server.ts",
+        "dev:alfa": "cd via51-alfa && npm run dev",
+        "dev:gamma": "cd via51-gamma && npm run dev",
+        "dev:fractal": "npx concurrently \"npm run dev:beta\" \"npm run dev:alfa\" \"npm run dev:gamma\""
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.0",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^5.0.0"
     }
 }
