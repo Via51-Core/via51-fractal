@@ -1,0 +1,54 @@
+{
+    "v51_dna": {
+        "node": "SYS-MEMORY",
+        "seq": "D-01",
+        "pulse": 1713000000000
+    },
+    "hierarchy": {
+        "root": {
+            "id": "N0-V51",
+            "level": 0,
+            "alias": "ALFA-MENTORIA",
+            "status": "ACTIVE",
+            "children": [
+                {
+                    "id": "N1-POL",
+                    "level": 1,
+                    "alias": "DEPT-POLITICA",
+                    "status": "ACTIVE",
+                    "children": [
+                        {
+                            "id": "N2-POL-T1",
+                            "alias": "TRIADA-ESTRATEGIA",
+                            "status": "STANDBY"
+                        },
+                        {
+                            "id": "N2-POL-T2",
+                            "alias": "TRIADA-NORMATIVA",
+                            "status": "STANDBY"
+                        },
+                        {
+                            "id": "N2-POL-T3",
+                            "alias": "TRIADA-INTELIGENCIA",
+                            "status": "STANDBY"
+                        }
+                    ]
+                },
+                {
+                    "id": "N1-SOC",
+                    "level": 1,
+                    "alias": "DEPT-SOCIAL",
+                    "status": "ACTIVE",
+                    "children": []
+                },
+                {
+                    "id": "N1-PROD",
+                    "level": 1,
+                    "alias": "DEPT-PRODUCCION",
+                    "status": "ACTIVE",
+                    "children": []
+                }
+            ]
+        }
+    }
+}
