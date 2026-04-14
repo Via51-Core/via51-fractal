@@ -1,51 +1,39 @@
 /**
- * V51_DNA: { node: "SERVER-BETA", type: "DRIVER", seq: "B-14" }
- * HUB CENTRAL: VIA51 HUB (PUERTO 3000)
+ * V51_DNA: { node: "SERVER-BETA", type: "DRIVER", seq: "B-16" }
  */
-
 import express from "express";
 import cors from "cors";
 import { Via51BlackBox } from "./core/blackbox_main";
+import { createClient } from "@supabase/supabase-js";
 
 const app = express();
+const supabase = createClient(process.env.SUPABASE_URL || "", process.env.SUPABASE_SERVICE_ROLE_KEY || "");
 
-// GOBERNANZA DE ACCESO: Permitir sinapsis desde el Laboratorio y Produccion
-app.use(cors({
-    origin: ["https://via51.org", /vercel\.app$/], // Acepta Vercel Previews
-    methods: ["POST"],
-    allowedHeaders: ["Content-Type"]
-}));
-
+app.use(cors({ origin: ["https://via51.org", "https://gamma.via51.org", /vercel\.app$/] }));
 app.use(express.json());
 
-/**
- * PUERTA DE ENTRADA UNIVERSAL (GATEKEEPER)
- * Recibe el V51_Package y lo entrega al Nucleo Agnóstico.
- */
+// GATEKEEPER: Entrada de ciudadanos
 app.post("/api/v1/gatekeeper", async (req, res) => {
-    console.log(`[HUB] Recibiendo peticion de: ${req.body.v51_dna?.node || "DESCONOCIDO"}`);
-
     try {
-        // La peticion entra a la Caja Negra (Mecanica Triple)
         const output = await Via51BlackBox.handleSinapsis(req.body);
-
-        // Si la Caja Negra rechaza por DNA invalido o error de esquema
-        if (output.status === "ERROR") {
-            return res.status(403).json(output);
-        }
-
-        // El HUB devuelve el resultado procesado y el sello de trazabilidad
         res.status(200).json(output);
+    } catch (e) { res.status(500).json({ status: "ERROR" }); }
+});
 
-    } catch (e: any) {
-        console.error("[HUB] Fallo critico en la transmision.");
-        res.status(500).json({ status: "HUB_ERROR", msg: "SINAPSIS_INTERRUMPIDA" });
-    }
+// INTEL: Endpoint para el monitor de GAMMA
+app.get("/api/v1/intel/pulses", async (req, res) => {
+    const env = req.query.env || "PROD";
+    const table = (env === "LAB") ? "dev_sys_events" : "sys_events";
+    
+    const { data, error } = await supabase
+        .from(table)
+        .select("*")
+        .order("timestamp", { ascending: false })
+        .limit(15);
+
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log("\n==============================================");
-    console.log(`[CARTA MAGNA] NUCLEO BETA EN LINEA (PUERTO ${PORT})`);
-    console.log("==============================================\n");
-});
+app.listen(PORT, () => console.log(`[HUB] Operativo en puerto ${PORT}`));

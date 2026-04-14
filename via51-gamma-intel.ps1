@@ -1,3 +1,58 @@
+# VIA51 ANTIGRAVITY - GAMMA INTEL VISOR SCRIPT
+# SEQUENCE: [V51-INTEL-B16-G07]
+
+$RootPath = "C:\via51-fractal"
+$BetaServer = "$RootPath\via51-beta\src\server.ts"
+$GammaApp = "$RootPath\via51-gamma\src\App.tsx"
+
+Write-Host "--- INICIANDO CONEXION DE INTELIGENCIA GAMMA ---" -ForegroundColor Cyan
+
+# 1. ACTUALIZACION AL 100%: server.ts (BETA) - Añadiendo Endpoint de Auditoria
+$ServerContent = @'
+/**
+ * V51_DNA: { node: "SERVER-BETA", type: "DRIVER", seq: "B-16" }
+ */
+import express from "express";
+import cors from "cors";
+import { Via51BlackBox } from "./core/blackbox_main";
+import { createClient } from "@supabase/supabase-js";
+
+const app = express();
+const supabase = createClient(process.env.SUPABASE_URL || "", process.env.SUPABASE_SERVICE_ROLE_KEY || "");
+
+app.use(cors({ origin: ["https://via51.org", "https://gamma.via51.org", /vercel\.app$/] }));
+app.use(express.json());
+
+// GATEKEEPER: Entrada de ciudadanos
+app.post("/api/v1/gatekeeper", async (req, res) => {
+    try {
+        const output = await Via51BlackBox.handleSinapsis(req.body);
+        res.status(200).json(output);
+    } catch (e) { res.status(500).json({ status: "ERROR" }); }
+});
+
+// INTEL: Endpoint para el monitor de GAMMA
+app.get("/api/v1/intel/pulses", async (req, res) => {
+    const env = req.query.env || "PROD";
+    const table = (env === "LAB") ? "dev_sys_events" : "sys_events";
+    
+    const { data, error } = await supabase
+        .from(table)
+        .select("*")
+        .order("timestamp", { ascending: false })
+        .limit(15);
+
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`[HUB] Operativo en puerto ${PORT}`));
+'@
+Set-Content -Path "$BetaServer" -Value $ServerContent
+
+# 2. ACTUALIZACION AL 100%: App.tsx (GAMMA) - El Visor de Trazabilidad
+$GammaContent = @'
 /**
  * V51_DNA: { id: "NODE-GAMMA-MANDO", seq: "G-07", env: "LAB" }
  */
@@ -63,3 +118,8 @@ export default function App() {
         </main>
     );
 }
+'@
+Set-Content -Path "$GammaApp" -Value $GammaContent
+
+Write-Host "--- ACTUALIZACION COMPLETADA EXITOSAMENTE ---" -ForegroundColor Green
+Write-Host "VISOR GAMMA CONECTADO AL LABORATORIO. PROCEDA CON GIT PUSH." -ForegroundColor White
