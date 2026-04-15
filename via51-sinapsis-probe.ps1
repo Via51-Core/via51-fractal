@@ -1,3 +1,9 @@
+# VIA51 ANTIGRAVITY - SINAPSIS PROBE A-26
+# SIN ACENTOS SEGUN CARTA MAGNA
+
+$AlfaApp = "C:\via51-fractal\via51-alfa\src\App.tsx"
+
+$AlfaContent = @'
 /**
  * V51_DNA: { id: "NODE-ALFA-0", seq: "A-26", env: "LAB" }
  */
@@ -108,3 +114,8 @@ export default function App() {
         </main>
     );
 }
+'@
+
+Set-Content -Path $AlfaApp -Value $AlfaContent
+Write-Host "--- DIAGNOSTICO INYECTADO AL 100% ---" -ForegroundColor Green
+Write-Host "PROCEDA CON GIT PUSH ORIGIN DEV" -ForegroundColor White
