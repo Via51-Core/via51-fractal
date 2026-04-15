@@ -1,3 +1,50 @@
+# VIA51 ANTIGRAVITY - SOVEREIGN REPAIR SCRIPT
+# SEQUENCE: [V51-REPAIR-B18-A27]
+# PROTOCOLO: SIN ACENTOS / CALIDAD MUNDIAL
+
+$RootPath = "C:\via51-fractal"
+$BetaServer = "$RootPath\via51-beta\src\server.ts"
+$AlfaApp = "$RootPath\via51-alfa\src\App.tsx"
+
+Write-Host "--- INICIANDO REPARACION SOBERANA DE SINAPSIS ---" -ForegroundColor Cyan
+
+# 1. ACTUALIZACION AL 100%: server.ts (BETA)
+$ServerContent = @'
+import express from "express";
+import cors from "cors";
+import { Via51BlackBox } from "./core/blackbox_main";
+
+const app = express();
+
+// APERTURA TOTAL DE PUERTAS PARA LABORATORIO
+app.use(cors({ origin: "*" }));
+app.use(express.json());
+
+// LATIDO DE VIDA (Health Check)
+app.get("/api/v1/health", (req, res) => {
+    res.json({ status: "ONLINE", node: "BETA-HUB", pulse: Date.now() });
+});
+
+// GATEKEEPER: Entrada de Sinapsis
+app.post("/api/v1/gatekeeper", async (req, res) => {
+    console.log(`[HUB] Pulso recibido de: ${req.body.v51_dna?.node || "ANON"}`);
+    try {
+        const output = await Via51BlackBox.handleSinapsis(req.body);
+        res.status(200).json(output);
+    } catch (e: any) {
+        console.error("[HUB] ERROR_INTERNO:", e.message);
+        res.status(500).json({ status: "ERROR", msg: e.message });
+    }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`[HUB] Nucleo B-18 operativo en puerto ${PORT}`));
+'@
+Set-Content -Path $BetaServer -Value $ServerContent
+Write-Host "[OK] server.ts reparado." -ForegroundColor Green
+
+# 2. ACTUALIZACION AL 100%: App.tsx (ALFA)
+$AlfaContent = @'
 /**
  * V51_DNA: { id: "NODE-ALFA-0", seq: "A-27", env: "LAB" }
  */
@@ -99,3 +146,8 @@ export default function App() {
         </main>
     );
 }
+'@
+Set-Content -Path $AlfaApp -Value $AlfaContent
+Write-Host "[OK] App.tsx reparado." -ForegroundColor Green
+
+Write-Host "--- PROCESO COMPLETADO. PROCEDA CON GIT PUSH ORIGIN DEV ---" -ForegroundColor Yellow
