@@ -7,7 +7,11 @@ app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.status(200).send("VIA51 HUB OPERATIVO - SINAPSIS ESM SELLADA");
+    res.status(200).send("VIA51 HUB OPERATIVO - CALIDAD MUNDIAL");
+});
+
+app.get("/api/v1/health", (req, res) => {
+    res.json({ status: "ONLINE", node: "BETA-HUB", pulse: Date.now() });
 });
 
 app.post("/api/v1/gatekeeper", async (req, res) => {
