@@ -1,3 +1,51 @@
+# VIA51 ANTIGRAVITY - RESPIRO Y RECONEXION
+# PROTOCOLO: SIN ACENTOS / CALIDAD MUNDIAL
+
+$RootPath = "C:\via51-fractal"
+$BetaServer = "$RootPath\via51-beta\src\server.ts"
+$AlfaApp = "$RootPath\via51-alfa\src\App.tsx"
+
+Write-Host "--- INICIANDO AJUSTE DE RESPIRO Y RECONEXION ---" -ForegroundColor Cyan
+
+# 1. ACTUALIZACION AL 100%: server.ts (BETA) - Maxima Simplicidad para evitar Offline
+$ServerContent = @'
+import express from "express";
+import cors from "cors";
+import { Via51BlackBox } from "./core/blackbox_main";
+
+const app = express();
+
+// APERTURA TOTAL DE PUERTAS (CORS)
+app.use(cors({ origin: "*" }));
+app.use(express.json());
+
+// RUTA RAIZ PARA PRUEBA MANUAL EN NAVEGADOR
+app.get("/", (req, res) => {
+    res.send("VIA51 HUB ONLINE");
+});
+
+// HEALTH CHECK PARA EL DRIVER ALFA
+app.get("/api/v1/health", (req, res) => {
+    res.json({ status: "ONLINE", timestamp: Date.now() });
+});
+
+// GATEKEEPER: Entrada de Sinapsis
+app.post("/api/v1/gatekeeper", async (req, res) => {
+    try {
+        const output = await Via51BlackBox.handleSinapsis(req.body);
+        res.status(200).json(output);
+    } catch (e: any) {
+        res.status(500).json({ status: "ERROR", msg: "FALLO_INTERNO_NUCLEO" });
+    }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`HUB B-19 en puerto ${PORT}`));
+'@
+Set-Content -Path $BetaServer -Value $ServerContent
+
+# 2. ACTUALIZACION AL 100%: App.tsx (ALFA) - Ajuste de "Respiro" Superior
+$AlfaContent = @'
 /**
  * V51_DNA: { id: "NODE-ALFA-0", seq: "A-28", env: "LAB" }
  */
@@ -103,3 +151,7 @@ export default function App() {
         </main>
     );
 }
+'@
+Set-Content -Path $AlfaApp -Value $AlfaContent
+
+Write-Host "--- PROCESO COMPLETADO. PROCEDA CON GIT PUSH ---" -ForegroundColor Green
