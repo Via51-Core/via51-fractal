@@ -1,3 +1,13 @@
+# VIA51 ANTIGRAVITY - HUB RESET B-22
+# PROTOCOLO: SIN ACENTOS / CALIDAD MUNDIAL
+
+$RootPath = "C:\via51-fractal"
+$BetaPath = "$RootPath\via51-beta"
+
+Write-Host "--- RECONSTRUYENDO ADN DE DESPLIEGUE EN BETA ---" -ForegroundColor Cyan
+
+# 1. ASEGURAR QUE EL SERVIDOR EXPORTE LA APP (REQUERIDO POR VERCEL)
+$ServerContent = @'
 import express from "express";
 import cors from "cors";
 import { Via51BlackBox } from "./core/blackbox_main";
@@ -31,3 +41,28 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 export default app; 
+'@
+Set-Content -Path "$BetaPath\src\server.ts" -Value $ServerContent
+
+# 2. VERCEL.JSON REFORZADO (CATCH-ALL ROUTE)
+$VercelConfig = @'
+{
+  "version": 2,
+  "name": "via51-beta",
+  "builds": [
+    {
+      "src": "src/server.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "src/server.ts"
+    }
+  ]
+}
+'@
+Set-Content -Path "$BetaPath\vercel.json" -Value $VercelConfig
+
+Write-Host "--- ARCHIVOS RECONSTRUIDOS AL 100% ---" -ForegroundColor Green
