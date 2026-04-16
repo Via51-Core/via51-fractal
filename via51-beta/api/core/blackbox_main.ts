@@ -2,11 +2,11 @@
  * V51_DNA: { node: "CORE-BETA", type: "MECHANIC", seq: "M-07-DB" }
  * MECANICA 07: INTERFAZ DE LA CAJA NEGRA (THE BLACK BOX)
  */
-import { CoreValidator, V51_Package } from "./validator";
-import { CoreProcessor } from "./processor";
-import { CoreOrchestrator } from "./orchestrator";
-import { CoreHangar } from "./hangar";
-import { CoreEventLog } from "./event_log";
+import { CoreValidator, V51_Package } from "./validator.js";
+import { CoreProcessor } from "./processor.js";
+import { CoreOrchestrator } from "./orchestrator.js";
+import { CoreHangar } from "./hangar.js";
+import { CoreEventLog } from "./event_log.js";
 
 export class Via51BlackBox {
     public static async handleSinapsis(pkg: V51_Package): Promise<any> {

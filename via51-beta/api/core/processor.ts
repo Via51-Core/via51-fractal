@@ -3,7 +3,7 @@
  * MECANICA 02: PROCESADOR DE ESTADOS (CORE ENGINE)
  */
 
-import { V51_Package } from "./validator";
+import { V51_Package } from "./validator.js";
 
 export interface V51_Result {
     status: "SUCCESS" | "FAILURE" | "PENDING";

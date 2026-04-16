@@ -3,7 +3,7 @@
  * MECANICA 03: ORQUESTADOR DE SALIDA
  */
 
-import { V51_Result } from "./processor";
+import { V51_Result } from "./processor.js";
 
 export interface V51_Dispatch {
     target: string; // Ejemplo: "ALFA-SCREEN", "GAMMA-LOG", "WA-DRIVER"

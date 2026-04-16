@@ -3,7 +3,7 @@
  * MECANICA 05: SELLADO EN SUPABASE CON PROTOCOLO ESPEJO
  */
 import { createClient } from "@supabase/supabase-js";
-import { V51_Result } from "./processor";
+import { V51_Result } from "./processor.js";
 
 const supabase = createClient(
     process.env.SUPABASE_URL || "", 

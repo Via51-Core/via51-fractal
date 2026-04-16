@@ -1,17 +1,13 @@
 import express from "express";
 import cors from "cors";
-import { Via51BlackBox } from "./core/blackbox_main";
+import { Via51BlackBox } from "./core/blackbox_main.js";
 
 const app = express();
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.status(200).send("VIA51 HUB OPERATIVO - MODO BUNKER");
-});
-
-app.get("/api/v1/health", (req, res) => {
-    res.json({ status: "ONLINE", node: "BETA-HUB", pulse: Date.now() });
+    res.status(200).send("VIA51 HUB OPERATIVO - SINAPSIS ESM SELLADA");
 });
 
 app.post("/api/v1/gatekeeper", async (req, res) => {
