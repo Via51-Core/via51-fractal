@@ -13,7 +13,7 @@ export default function App() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    v51_dna: { node: "NODE-ALFA-0", seq: "A-38", env: "LAB" },
+                    v51_dna: { node: "NODE-ALFA-0", seq: "A-39", env: "LAB", pulse: Date.now() },
                     payload: { dni }
                 })
             });

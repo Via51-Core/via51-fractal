@@ -5,13 +5,12 @@ const supabase = createClient(process.env.SUPABASE_URL || "", process.env.SUPABA
 
 export class Via51BlackBox {
     public static async handleSinapsis(pkg: any): Promise<any> {
-        // 1. VALIDACION DE ESTRUCTURA
         if (!CoreValidator.validate(pkg)) {
             return { status: "ERROR", msg: "ESTRUCTURA_INVALIDA" };
         }
 
         try {
-            // 2. CONTRASTE EN REGISTRO MAESTRO
+            // 1. CONTRASTE EN REGISTRO MAESTRO
             const { data: actor, error: actorErr } = await supabase
                 .from("sys_registry")
                 .select("*")
@@ -22,14 +21,14 @@ export class Via51BlackBox {
                 return { status: "DENIED", msg: "DNI_NO_ENCONTRADO" };
             }
 
-            // 3. SELLADO EN TABLA ESPEJO (LAB) O REAL (PROD)
+            // 2. SELLADO SOBERANO
             const targetTable = (pkg.v51_dna.env === "LAB") ? "dev_sys_events" : "sys_events";
             const { data: event, error: eventErr } = await supabase
                 .from(targetTable)
                 .insert([{
                     actor_id: actor.id,
                     action_type: "SINAPSIS_VITALICIA",
-                    payload: { dni: pkg.payload.dni, env: pkg.v51_dna.env }
+                    payload: { dni: pkg.payload.dni, env: pkg.v51_dna.env, pulse: pkg.v51_dna.pulse }
                 }])
                 .select();
 

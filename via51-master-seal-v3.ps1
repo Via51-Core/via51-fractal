@@ -1,20 +1,18 @@
-# VIA51 ANTIGRAVITY - MASTER SYNC V2
+# VIA51 ANTIGRAVITY - MASTER SEAL V3 (FINAL SINAPSIS)
 # PROTOCOLO: SIN ACENTOS / CALIDAD MUNDIAL / ARCHIVOS AL 100%
 
 $RootPath = "C:\via51-fractal"
 $BetaApi = "$RootPath\via51-beta\api"
 $AlfaApp = "$RootPath\via51-alfa\src\App.tsx"
 
-Write-Host "--- RECONSTRUYENDO SINAPSIS TOTAL (ZERO ERRORS) ---" -ForegroundColor Cyan
+Write-Host "--- SELLANDO MAQUINARIA PARA TRASCENDENCIA TOTAL ---" -ForegroundColor Cyan
 
 # 1. ACTUALIZACION: api/core/validator.ts (LA ADUANA)
 $ValidatorCode = @'
 export class CoreValidator {
     public static validate(input: any): boolean {
-        // Validacion minimalista para asegurar la sinapsis en Laboratorio
-        const hasDna = input && input.v51_dna && input.v51_dna.node;
-        const hasPayload = input && input.payload && input.payload.dni;
-        return !!(hasDna && hasPayload);
+        // Validacion estructural agnostica
+        return !!(input && input.v51_dna && input.payload && input.payload.dni);
     }
 }
 '@
@@ -29,13 +27,12 @@ const supabase = createClient(process.env.SUPABASE_URL || "", process.env.SUPABA
 
 export class Via51BlackBox {
     public static async handleSinapsis(pkg: any): Promise<any> {
-        // 1. VALIDACION DE ESTRUCTURA
         if (!CoreValidator.validate(pkg)) {
             return { status: "ERROR", msg: "ESTRUCTURA_INVALIDA" };
         }
 
         try {
-            // 2. CONTRASTE EN REGISTRO MAESTRO
+            // 1. CONTRASTE EN REGISTRO MAESTRO
             const { data: actor, error: actorErr } = await supabase
                 .from("sys_registry")
                 .select("*")
@@ -46,14 +43,14 @@ export class Via51BlackBox {
                 return { status: "DENIED", msg: "DNI_NO_ENCONTRADO" };
             }
 
-            // 3. SELLADO EN TABLA ESPEJO (LAB) O REAL (PROD)
+            // 2. SELLADO SOBERANO
             const targetTable = (pkg.v51_dna.env === "LAB") ? "dev_sys_events" : "sys_events";
             const { data: event, error: eventErr } = await supabase
                 .from(targetTable)
                 .insert([{
                     actor_id: actor.id,
                     action_type: "SINAPSIS_VITALICIA",
-                    payload: { dni: pkg.payload.dni, env: pkg.v51_dna.env }
+                    payload: { dni: pkg.payload.dni, env: pkg.v51_dna.env, pulse: pkg.v51_dna.pulse }
                 }])
                 .select();
 
@@ -83,7 +80,7 @@ const app = express();
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-app.get("/", (req, res) => res.send("VIA51 HUB ONLINE - B-35"));
+app.get("/", (req, res) => res.send("VIA51 HUB ONLINE - B-36"));
 
 app.post("/api/v1/gatekeeper", async (req, res) => {
     const output = await Via51BlackBox.handleSinapsis(req.body);
@@ -112,7 +109,7 @@ export default function App() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    v51_dna: { node: "NODE-ALFA-0", seq: "A-38", env: "LAB" },
+                    v51_dna: { node: "NODE-ALFA-0", seq: "A-39", env: "LAB", pulse: Date.now() },
                     payload: { dni }
                 })
             });
@@ -166,4 +163,4 @@ export default function App() {
 Set-Content -Path $AlfaApp -Value $AlfaCode
 
 Write-Host "--- SINAPSIS RECONSTRUIDA AL 100% ---" -ForegroundColor Green
-Write-Host "PROCEDA CON GIT PUSH ORIGIN DEV" -ForegroundColor White
+Write-Host "PROCEDA CON LA FUSION SOBERANA (MERGE)" -ForegroundColor White

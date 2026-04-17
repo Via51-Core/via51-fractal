@@ -6,7 +6,7 @@ const app = express();
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-app.get("/", (req, res) => res.send("VIA51 HUB ONLINE - B-35"));
+app.get("/", (req, res) => res.send("VIA51 HUB ONLINE - B-36"));
 
 app.post("/api/v1/gatekeeper", async (req, res) => {
     const output = await Via51BlackBox.handleSinapsis(req.body);
