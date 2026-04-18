@@ -1,3 +1,56 @@
+# VIA51 ANTIGRAVITY - MULTIMEDIA UPLOAD A-42 / B-38
+# PROTOCOLO: SIN ACENTOS / CALIDAD MUNDIAL / ARCHIVOS AL 100%
+
+$RootPath = "C:\via51-fractal"
+$BetaApi = "$RootPath\via51-beta\api"
+$AlfaApp = "$RootPath\via51-alfa\src\App.tsx"
+
+Write-Host "--- SELLANDO INTERFAZ DE CARGA MULTIMEDIA ---" -ForegroundColor Cyan
+
+# 1. ACTUALIZACION: blackbox_main.ts (EL RECEPTOR)
+$BlackBox = @'
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(process.env.SUPABASE_URL || "", process.env.SUPABASE_SERVICE_ROLE_KEY || "");
+
+export class Via51BlackBox {
+    public static async handleSinapsis(pkg: any): Promise<any> {
+        const { action, payload, v51_dna } = pkg;
+
+        if (action === "GET_SMART_CANVAS") {
+            return { status: "SUCCESS", config: { bg_img: "/ceo-lima.png", thoughts: ["Primero en calificaciones...", "Hay taita lindo..."], interval: 8000 } };
+        }
+
+        // ACCION: REGISTRAR APORTE MULTIMEDIA
+        if (action === "SUBMIT_CONTRIBUTION") {
+            const { data: actor } = await supabase.from("sys_registry").select("id").eq("dni", payload.dni).single();
+            if (!actor) return { status: "DENIED", msg: "NO_REGISTRADO" };
+
+            const { data, error } = await supabase.from("sys_contributions").insert([{
+                actor_id: actor.id,
+                type: payload.type,
+                content_url: payload.content,
+                context_script: payload.context
+            }]).select();
+
+            if (error) return { status: "ERROR", msg: error.message };
+            return { status: "SUCCESS", tx_id: data[0].id };
+        }
+
+        if (action === "CHECK_IDENTITY") {
+            const { data: actor } = await supabase.from("sys_registry").select("*").eq("dni", payload.dni).single();
+            if (!actor) return { status: "DENIED", msg: "NO_REGISTRADO" };
+            return { status: "SUCCESS", user: actor.full_name };
+        }
+
+        return { status: "ERROR", msg: "ACCION_INVALIDA" };
+    }
+}
+'@
+Set-Content -Path "$BetaApi\core\blackbox_main.ts" -Value $BlackBox
+
+# 2. ACTUALIZACION: App.tsx (LA INTERFAZ DE CARGA)
+$AlfaCode = @'
 import React, { useState, useEffect } from "react";
 
 export default function App() {
@@ -105,3 +158,7 @@ export default function App() {
         </main>
     );
 }
+'@
+Set-Content -Path $AlfaApp -Value $AlfaCode
+
+Write-Host "--- INTERFAZ MULTIMEDIA SELLADA AL 100% ---" -ForegroundColor Green
