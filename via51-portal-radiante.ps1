@@ -1,3 +1,11 @@
+# VIA51 ANTIGRAVITY - PORTAL RADIANTE A-44
+# PROTOCOLO: SIN ACENTOS / CALIDAD MUNDIAL / ARCHIVOS AL 100%
+
+$AlfaApp = "C:\via51-fractal\via51-alfa\src\App.tsx"
+
+Write-Host "--- REPARANDO SENSIBILIDAD DEL PUNTO DE LUZ ---" -ForegroundColor Cyan
+
+$AlfaCode = @'
 /**
  * V51_DNA: { id: "NODE-ALFA-0", seq: "A-44", env: "LAB" }
  */
@@ -118,3 +126,6 @@ export default function App() {
         </main>
     );
 }
+'@
+Set-Content -Path $AlfaApp -Value $AlfaCode
+Write-Host "--- PORTAL REPARADO AL 100% ---" -ForegroundColor Green
