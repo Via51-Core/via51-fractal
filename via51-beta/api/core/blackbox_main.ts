@@ -10,26 +10,24 @@ export class Via51BlackBox {
             return { status: "SUCCESS", config: { bg_img: "/ceo-lima.png", thoughts: ["Primero en calificaciones...", "Hay taita lindo..."], interval: 8000 } };
         }
 
-        // ACCION: REGISTRAR APORTE MULTIMEDIA
+        if (action === "CHECK_IDENTITY") {
+            const { data: actor } = await supabase.from("sys_registry").select("*").eq("dni", payload.dni).single();
+            if (!actor) return { status: "DENIED", msg: "NO_REGISTRADO" };
+            return { status: "SUCCESS", user: actor };
+        }
+
         if (action === "SUBMIT_CONTRIBUTION") {
             const { data: actor } = await supabase.from("sys_registry").select("id").eq("dni", payload.dni).single();
-            if (!actor) return { status: "DENIED", msg: "NO_REGISTRADO" };
+            if (!actor) return { status: "DENIED" };
 
             const { data, error } = await supabase.from("sys_contributions").insert([{
                 actor_id: actor.id,
                 type: payload.type,
-                content_url: payload.content,
                 context_script: payload.context
             }]).select();
 
             if (error) return { status: "ERROR", msg: error.message };
             return { status: "SUCCESS", tx_id: data[0].id };
-        }
-
-        if (action === "CHECK_IDENTITY") {
-            const { data: actor } = await supabase.from("sys_registry").select("*").eq("dni", payload.dni).single();
-            if (!actor) return { status: "DENIED", msg: "NO_REGISTRADO" };
-            return { status: "SUCCESS", user: actor.full_name };
         }
 
         return { status: "ERROR", msg: "ACCION_INVALIDA" };

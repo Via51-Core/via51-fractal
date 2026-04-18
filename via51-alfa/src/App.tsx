@@ -23,6 +23,7 @@ export default function App() {
     }, [config]);
 
     const handleAuth = async () => {
+        if (dni.length !== 8) return;
         const res = await fetch(`${API_URL}/api/v1/gatekeeper`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -30,7 +31,7 @@ export default function App() {
         });
         const out = await res.json();
         if (out.status === "SUCCESS") { setUser(out.user); setView("UPLOAD"); }
-        else alert("DNI no autorizado");
+        else alert("Identidad no autorizada en el Holding");
     };
 
     const handleUpload = async () => {
@@ -40,11 +41,12 @@ export default function App() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 action: "SUBMIT_CONTRIBUTION", 
-                payload: { dni, type: "IMAGE", content: "base64_simulated", context },
+                payload: { dni, type: "IMAGE", context },
                 v51_dna: { node: "ALFA", env: "LAB" } 
             })
         });
-        if (res.ok) setView("SUCCESS");
+        const data = await res.json();
+        if (data.status === "SUCCESS") { setUser({...user, tx_id: data.tx_id}); setView("SUCCESS"); }
     };
 
     const MainUI = ({ isMob }: { isMob: boolean }) => (
@@ -56,10 +58,11 @@ export default function App() {
                 <p className={`text-white font-black italic uppercase leading-tight animate-in fade-in slide-in-from-bottom duration-1000 ${isMob ? 'text-2xl' : 'text-6xl'}`}>
                     {config.thoughts[thoughtIdx]}
                 </p>
-                <div className="h-1.5 w-20 bg-purple-600 mx-auto my-6"></div>
+                <div className="h-1.5 w-20 bg-purple-600 mx-auto my-6 shadow-[0_0_20px_rgba(168,85,247,0.9)]"></div>
                 <p className="text-green-500 font-bold tracking-[0.4em] text-[10px] uppercase">Soberania Digital</p>
             </div>
-            <button onClick={() => setView("LOGIN")} className="absolute bottom-10 right-10 w-4 h-4 rounded-full bg-purple-500/30 border border-purple-500 animate-pulse"></button>
+            {/* PUNTO DE LUZ: EL DISPARADOR */}
+            <button onClick={() => setView("LOGIN")} className="absolute bottom-10 right-10 w-4 h-4 rounded-full bg-purple-500/30 border border-purple-500 animate-pulse hover:scale-150 transition-all"></button>
         </div>
     );
 
@@ -71,20 +74,20 @@ export default function App() {
                     {view === "CANVAS" && <MainUI isMob={true} />}
                     
                     {view === "LOGIN" && (
-                        <div className="absolute inset-0 bg-black/95 z-50 p-10 flex flex-col justify-center text-center">
+                        <div className="absolute inset-0 bg-black/95 z-50 p-10 flex flex-col justify-center text-center animate-in fade-in">
                             <button onClick={() => setView("CANVAS")} className="absolute top-12 right-8 text-zinc-600">✕</button>
                             <h2 className="text-white text-2xl font-black mb-10 uppercase italic">Identidad</h2>
-                            <input type="text" value={dni} onChange={e => setDni(e.target.value.replace(/\D/g, "").slice(0,8))} placeholder="DNI" className="w-full bg-transparent border-b border-zinc-800 p-4 text-4xl font-bold text-center text-white outline-none focus:border-purple-500 mb-10" />
+                            <input type="text" value={dni} onChange={e => setDni(e.target.value.replace(/\D/g, "").slice(0,8))} placeholder="00000000" className="w-full bg-transparent border-b border-zinc-800 p-4 text-4xl font-bold text-center text-white outline-none focus:border-purple-500 mb-10" />
                             <button onClick={handleAuth} className="w-full bg-purple-600 text-white font-black p-5 uppercase text-xs tracking-widest hover:bg-purple-500">Validar</button>
                         </div>
                     )}
 
                     {view === "UPLOAD" && (
                         <div className="absolute inset-0 bg-black/95 z-50 p-10 flex flex-col justify-center animate-in slide-in-from-bottom duration-500">
-                            <h2 className="text-green-500 text-xs font-bold mb-2 uppercase tracking-widest">Bienvenido, {user}</h2>
+                            <h2 className="text-green-500 text-[10px] font-bold mb-2 uppercase tracking-widest">Bienvenido, {user.full_name}</h2>
                             <h3 className="text-white text-2xl font-black mb-8 uppercase italic">Nuevo Guion</h3>
                             <div className="space-y-4">
-                                <div className="border-2 border-dashed border-zinc-800 p-10 text-center text-[10px] text-zinc-600 uppercase">Seleccionar Imagen / Video</div>
+                                <div className="border-2 border-dashed border-zinc-800 p-10 text-center text-[9px] text-zinc-600 uppercase">Seleccionar Imagen / Video</div>
                                 <textarea id="script_text" placeholder="Instrucciones de texto alusivo..." className="w-full bg-zinc-900 border border-zinc-800 p-4 text-xs h-32 text-white outline-none focus:border-green-500"></textarea>
                                 <button onClick={handleUpload} className="w-full bg-green-600 text-black font-black p-5 uppercase text-xs tracking-widest hover:bg-green-400">Enviar para Evaluacion</button>
                                 <button onClick={() => setView("CANVAS")} className="w-full text-[9px] text-zinc-600 uppercase underline mt-4">Cancelar</button>
@@ -96,7 +99,7 @@ export default function App() {
                         <div className="absolute inset-0 bg-black/95 z-50 p-10 flex flex-col justify-center text-center animate-in zoom-in">
                             <p className="text-green-500 text-5xl mb-6">✓</p>
                             <h2 className="text-xl font-black text-white uppercase mb-2">Aporte Recibido</h2>
-                            <p className="text-[10px] text-zinc-500 mb-10">Su propuesta ha sido sellada. Le notificaremos tras la evaluacion de GAMMA.</p>
+                            <p className="text-[10px] text-zinc-500 mb-10 font-mono">TX: {user.tx_id.split("-")[0]}...</p>
                             <button onClick={() => setView("CANVAS")} className="text-[9px] text-zinc-600 underline uppercase">Finalizar</button>
                         </div>
                     )}
