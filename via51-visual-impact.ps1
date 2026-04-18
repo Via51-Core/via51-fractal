@@ -1,3 +1,11 @@
+# VIA51 ANTIGRAVITY - VISUAL IMPACT A-41
+# PROTOCOLO: SIN ACENTOS / CALIDAD MUNDIAL
+
+$AlfaApp = "C:\via51-fractal\via51-alfa\src\App.tsx"
+
+Write-Host "--- SELLANDO IMPACTO VISUAL A-41 ---" -ForegroundColor Cyan
+
+$AlfaCode = @'
 /**
  * V51_DNA: { id: "NODE-ALFA-0", seq: "A-41", env: "LAB" }
  */
@@ -114,3 +122,6 @@ export default function App() {
         </main>
     );
 }
+'@
+Set-Content -Path $AlfaApp -Value $AlfaCode
+Write-Host "[OK] App.tsx actualizado a version A-41." -ForegroundColor Green
