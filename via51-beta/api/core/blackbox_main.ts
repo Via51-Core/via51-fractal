@@ -10,25 +10,15 @@ export class Via51BlackBox {
             return { status: "SUCCESS", config: { bg_img: "/ceo-lima.png", thoughts: ["Primero en calificaciones...", "Hay taita lindo..."], interval: 8000 } };
         }
 
-        if (action === "CHECK_IDENTITY") {
-            const dni = payload.dni;
+        if (action === "SIGN_PROTOCOL") {
+            const { dni, whatsapp } = payload;
             
-            // A. Obtener Geo-Data (Simulado o via API externa en produccion)
-            const geo = { city: "Lima", region: "Lima", country: "Peru" };
-
-            // B. Consultar Registro Maestro
             let { data: actor } = await supabase.from("sys_registry").select("*").eq("dni", dni).single();
 
-            // C. Si es INEXISTENTE (Confirmado por humano), denegar amablemente
-            if (actor && actor.auth_status === "INEXISTENTE") {
-                return { status: "DENIED_AMABLE", msg: "Lo sentimos, el registro no pudo ser validado." };
-            }
-
-            // D. Si no existe, registrar como nuevo (Nivel 1)
             if (!actor) {
                 const { data: newActor } = await supabase.from("sys_registry").insert([{
                     dni: dni,
-                    full_name: "Ciudadano Nuevo",
+                    full_name: "Ciudadano por Validar",
                     role: "CITIZEN",
                     hierarchy_level: 1,
                     auth_status: "POR_VERIFICAR"
@@ -36,20 +26,14 @@ export class Via51BlackBox {
                 actor = newActor;
             }
 
-            // E. Sellar evento con IP y Geo
-            const targetTable = (v51_dna.env === "LAB") ? "dev_sys_events" : "sys_events";
-            await supabase.from(targetTable).insert([{
+            await supabase.from((v51_dna.env === "LAB" ? "dev_sys_events" : "sys_events")).insert([{
                 actor_id: actor.id,
-                action_type: "SINAPSIS_IDENTIDAD",
-                payload: { ip, geo, timestamp: new Date().toISOString(), level: actor.hierarchy_level }
+                action_type: "ACEPTACION_PROTOCOL_VINCULANTE",
+                payload: { dni, whatsapp, ip, timestamp: new Date().toISOString() }
             }]);
 
-            return { 
-                status: "SUCCESS", 
-                user: { name: actor.full_name, level: actor.hierarchy_level, status: actor.auth_status } 
-            };
+            return { status: "SUCCESS", user: actor };
         }
-
         return { status: "ERROR" };
     }
 }
