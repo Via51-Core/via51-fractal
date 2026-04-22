@@ -1,3 +1,54 @@
+# VIA51 ANTIGRAVITY - DEV DOMAIN ACTIVATION A-53 / B-31
+# PROTOCOLO: SIN ACENTOS / CALIDAD MUNDIAL / ARCHIVOS AL 100%
+
+$RootPath = "C:\via51-fractal"
+$BetaApi = "$RootPath\via51-beta\api"
+$AlfaApp = "$RootPath\via51-alfa\src\App.tsx"
+
+Write-Host "--- INICIANDO ACTIVACION DE dev.alfa.via51.org ---" -ForegroundColor Cyan
+
+# 1. ACTUALIZACION AL 100%: api/index.ts (BETA)
+$HubCode = @'
+import express from "express";
+import cors from "cors";
+import { Via51BlackBox } from "./core/blackbox_main.js";
+
+const app = express();
+
+// GOBERNANZA DE ACCESO: Autorizamos el nuevo dominio de laboratorio
+const allowedOrigins = [
+    "https://via51.org", 
+    "https://dev.alfa.via51.org", 
+    "https://gamma.via51.org"
+];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin) || origin.includes("vercel.app")) {
+            callback(null, true);
+        } else {
+            callback(new Error("Acceso denegado por jerarquia fractal"));
+        }
+    }
+}));
+
+app.use(express.json());
+
+app.get("/", (req, res) => res.send("VIA51 HUB ONLINE - B-31"));
+
+app.post("/api/v1/gatekeeper", async (req, res) => {
+    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "0.0.0.0";
+    const output = await Via51BlackBox.handleSinapsis(req.body, String(ip));
+    res.status(200).json(output);
+});
+
+export default app;
+'@
+Set-Content -Path "$BetaApi\index.ts" -Value $HubCode
+Write-Host "[OK] Hub (BETA) configurado para dev.alfa.via51.org" -ForegroundColor Green
+
+# 2. ACTUALIZACION AL 100%: App.tsx (ALFA)
+$AlfaCode = @'
 /**
  * V51_DNA: { id: "NODE-ALFA-0", seq: "A-53", env: "LAB" }
  */
@@ -98,3 +149,8 @@ export default function App() {
         </main>
     );
 }
+'@
+Set-Content -Path $AlfaApp -Value $AlfaCode
+Write-Host "[OK] Alfa (Nivel 0) configurada para dev.alfa.via51.org" -ForegroundColor Green
+
+Write-Host "--- PROCESO COMPLETADO. PROCEDA CON GIT PUSH ORIGIN DEV ---" -ForegroundColor Yellow
