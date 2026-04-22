@@ -1,3 +1,20 @@
+# VIA51 ANTIGRAVITY - PURGE AND IGNITE A-48
+# PROTOCOLO: SIN ACENTOS / CALIDAD MUNDIAL
+
+$RootPath = "C:\via51-fractal"
+
+Write-Host "--- INICIANDO PURGA DE MOCHILA ESTRUCTURAL ---" -ForegroundColor Cyan
+
+# 1. ELIMINACION DE BLOQUEOS (Locks y Modules)
+$Targets = Get-ChildItem -Path $RootPath -Include "node_modules", "package-lock.json" -Recurse
+foreach ($item in $Targets) {
+    Remove-Item $item.FullName -Recurse -Force
+    Write-Host "[PURGE] Eliminado: $($item.FullName)" -ForegroundColor Yellow
+}
+
+# 2. ASEGURAR INTEGRIDAD DE App.tsx (ALFA) CON PROTOCOLO TRILINGUE
+$AlfaApp = "$RootPath\via51-alfa\src\App.tsx"
+$AlfaCode = @'
 import React, { useState, useEffect } from "react";
 
 export default function App() {
@@ -94,3 +111,7 @@ export default function App() {
         </main>
     );
 }
+'@
+Set-Content -Path $AlfaApp -Value $AlfaCode
+
+Write-Host "--- PURGA Y SELLADO COMPLETADOS. LISTO PARA GIT PUSH ---" -ForegroundColor Green
