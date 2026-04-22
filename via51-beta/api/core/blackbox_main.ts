@@ -6,40 +6,50 @@ export class Via51BlackBox {
     public static async handleSinapsis(pkg: any, ip: string): Promise<any> {
         const { action, payload, v51_dna } = pkg;
 
-        // EL NUCLEO ENTREGA EL GUION ESTRUCTURAL (COMPOSICION)
+        // ACCION: OBTENER CONFIGURACION DE LIENZO
         if (action === "GET_SMART_CANVAS") {
-            return {
-                status: "SUCCESS",
-                config: {
-                    bg_img: "/ceo-lima.png",
-                    thoughts: [
-                        "Primero en calificaciones y al final de la cedula para moverles el piso a los corruptos.",
-                        "Hay taita lindo, hasta que al fin te revelaste como morado, taitita es peruano."
-                    ],
-                    // AJUSTES DE COMPOSICION POR MARCO
-                    styles: {
-                        desktop: { textScale: "4vw", lineMargin: "mt-16", padding: "pt-[45vh]" },
-                        mobile: { textScale: "7vw", lineMargin: "my-6", padding: "justify-end pb-24" }
-                    },
-                    interval: 9000
-                }
-            };
+            return { status: "SUCCESS", config: { bg_img: "/ceo-lima.png", thoughts: ["Primero en calificaciones...", "Hay taita lindo..."], interval: 9000, styles: { desktop: { textScale: "4vw", padding: "pt-[45vh]", lineMargin: "mt-16" }, mobile: { textScale: "7vw", padding: "justify-end pb-24", lineMargin: "my-6" } } } };
         }
 
-        if (action === "SIGN_PROTOCOL") {
-            const { dni, whatsapp } = payload;
-            let { data: actor } = await supabase.from("sys_registry").select("*").eq("dni", dni).single();
-            if (!actor) {
-                const { data: n } = await supabase.from("sys_registry").insert([{ dni, full_name: "Por Validar", role: "CITIZEN", hierarchy_level: 1 }]).select().single();
-                actor = n;
+        // ACCION: CARGA MULTIMEDIA VINCULANTE
+        if (action === "SUBMIT_CONTRIBUTION") {
+            try {
+                const { dni, type, file_name, file_base64, context } = payload;
+                
+                // A. Identificar Actor
+                const { data: actor } = await supabase.from("sys_registry").select("id").eq("dni", dni).single();
+                if (!actor) return { status: "DENIED", msg: "IDENTIDAD_NO_VALIDA" };
+
+                // B. Subir al Bunker de Activos (Supabase Storage)
+                const filePath = `${dni}/${Date.now()}_${file_name}`;
+                const buffer = Buffer.from(file_base64, 'base64');
+                
+                const { data: storageData, error: storageErr } = await supabase.storage
+                    .from('contributions')
+                    .upload(filePath, buffer, { contentType: 'image/webp', upsert: true });
+
+                if (storageErr) throw storageErr;
+
+                // C. Sellar en Tabla de Aportes
+                const { data: contrib } = await supabase.from("sys_contributions").insert([{
+                    actor_id: actor.id,
+                    type: type,
+                    content_url: filePath,
+                    context_script: context
+                }]).select().single();
+
+                return { status: "SUCCESS", tx_id: contrib.id };
+            } catch (e: any) {
+                return { status: "ERROR", msg: e.message };
             }
-            await supabase.from((v51_dna.env === "LAB" ? "dev_sys_events" : "sys_events")).insert([{
-                actor_id: actor.id,
-                action_type: "ACEPTACION_PROTOCOLO",
-                payload: { dni, whatsapp, ip, timestamp: new Date().toISOString() }
-            }]);
-            return { status: "SUCCESS", user: actor.full_name };
         }
+
+        if (action === "CHECK_IDENTITY") {
+            const { data: actor } = await supabase.from("sys_registry").select("*").eq("dni", payload.dni).single();
+            if (!actor) return { status: "DENIED" };
+            return { status: "SUCCESS", user: actor };
+        }
+
         return { status: "ERROR" };
     }
 }
