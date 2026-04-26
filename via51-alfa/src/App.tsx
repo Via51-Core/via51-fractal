@@ -1,100 +1,54 @@
-/**
- * V51_DNA: { id: "NODE-ALFA-0", seq: "A-53", env: "LAB" }
- */
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from 'react'
+import { createClient } from '@supabase/supabase-js'
+import { motion } from 'framer-motion'
 
-export default function App() {
-    const [view, setView] = useState("CANVAS"); 
-    const [lang, setLang] = useState("ES"); 
-    const [dni, setDni] = useState("");
-    const [whatsapp, setWhatsapp] = useState("");
-    const [thoughtIdx, setIdx] = useState(0);
-    const [config, setConfig] = useState({ 
-        bg_img: "/ceo-lima.png", 
-        thoughts: [
-            "Primero en calificaciones y al fondo de la cedula para moverles el piso a los corruptos.",
-            "Hay taita lindo, hasta que al fin te revelaste como morado, taitita es peruano."
-        ], 
-        interval: 8000 
-    });
+const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY)
 
-    const API_URL = "https://hub.via51.org";
+function App() {
+  const [ui, setUi] = useState({ 
+    primaryColor: '#D4AF37', textSize: '48', bgImage: '', bgOpacity: 0.5,
+    textMaxWidth: '800', textYPosition: '0', textAlign: 'center', fontWeight: '900' 
+  })
+  const [gov, setGov] = useState({ text: '' })
 
-    const legal = {
-        ES: { title: "Protocolo de Convivencia Soberana", body: "Via51 Antigravity es un Holding Digital y Ecosistema Fractal. Promovido por Fredy Hector Bazalar Grimaldo (DNI 06917989). Toda accion es VINCULANTE.", dni: "Documento Identidad", wa: "WhatsApp", btn: "ACEPTAR Y VINCULAR" },
-        QU: { title: "Allin Kawsay Kamachiy", body: "Via51 Antigravity nisqaqa huk Suyu Fractal nisqam. Fredy Hector Bazalar Grimaldo-qa kamachin. Tukuy rurasqaykiqa HUNT’ANAPAQMI.", dni: "Kikinyachiq Qillqa", wa: "WhatsApp", btn: "ARI NISPA TINKUCHIY" },
-        EN: { title: "Sovereign Coexistence Protocol", body: "Via51 Antigravity is a Digital Holding and Fractal Ecosystem. Promoted by Fredy Hector Bazalar Grimaldo (ID 06917989). All actions are BINDING.", dni: "Identity Document", wa: "WhatsApp", btn: "ACCEPT AND BIND" }
-    };
+  useEffect(() => {
+    const fetchAll = async () => {
+      const { data: uiData } = await supabase.from('sys_registry').select('value').eq('id', 'ui_config_alfa').single()
+      const { data: govData } = await supabase.from('sys_registry').select('value').eq('id', 'carta_magna_2_0').single()
+      if (uiData) setUi(uiData.value)
+      if (govData) setGov(govData.value)
+    }
+    fetchAll()
+    supabase.channel('realtime').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'sys_registry' }, 
+      p => {
+        if(p.new.id === 'ui_config_alfa') setUi(p.new.value)
+        if(p.new.id === 'carta_magna_2_0') setGov(p.new.value)
+      }).subscribe()
+  }, [])
 
-    useEffect(() => {
-        const timer = setInterval(() => setIdx(i => (i + 1) % config.thoughts.length), config.interval);
-        return () => clearInterval(timer);
-    }, [config]);
-
-    const handleSign = async () => {
-        if (dni.length < 5 || whatsapp.length < 9) return alert("Datos incompletos.");
-        const res = await fetch(`${API_URL}/api/v1/gatekeeper`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "SIGN_PROTOCOL", payload: { dni, whatsapp }, v51_dna: { node: "ALFA", env: "LAB" } })
-        });
-        if (res.ok) setView("SUCCESS");
-    };
-
-    const MainUI = ({ isMob }: { isMob: boolean }) => (
-        <div className="h-full w-full relative flex flex-col items-center justify-end overflow-hidden bg-black font-sans">
-            <div className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ${isMob ? 'opacity-85' : 'opacity-60'}`}
-                style={{ backgroundImage: `url("${config.bg_img}")` }}></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-            
-            <div className={`relative z-10 text-center w-full px-12 ${isMob ? 'pb-24' : 'pb-40'}`}>
-                <div className="min-h-[160px] flex items-center justify-center">
-                    <p className={`text-white font-black italic uppercase leading-tight animate-in fade-in slide-in-from-bottom duration-1000 ${isMob ? 'text-2xl tracking-tighter' : 'text-6xl tracking-tight'}`}>
-                        {config.thoughts[thoughtIdx]}
-                    </p>
-                </div>
-                <div className="h-1.5 w-20 bg-purple-600 mx-auto my-6 shadow-[0_0_20px_rgba(168,85,247,0.9)]"></div>
-                <p className="text-green-500 font-bold tracking-[0.4em] text-[10px] md:text-xs uppercase italic">dev.alfa.via51.org</p>
-            </div>
-            <button onClick={() => setView("LOGIN")} className="absolute bottom-10 right-10 w-10 h-10 rounded-full bg-purple-500/20 border border-purple-500/50 flex items-center justify-center z-50 animate-pulse">
-                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-            </button>
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-black relative overflow-hidden">
+      {ui.bgImage && (
+        <img src={ui.bgImage} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700" 
+             style={{ opacity: ui.bgOpacity }} />
+      )}
+      
+      <div className="relative z-10 w-full flex flex-col items-center" 
+           style={{ transform: `translateY(${ui.textYPosition}px)` }}>
+        <div style={{ 
+            maxWidth: `${ui.textMaxWidth}px`, 
+            textAlign: ui.textAlign as any,
+            color: ui.primaryColor,
+            fontSize: `${ui.textSize}px`,
+            fontWeight: ui.fontWeight,
+            lineHeight: '1',
+            padding: '20px'
+          }} 
+          className="uppercase tracking-tighter transition-all duration-500">
+          {gov.text}
         </div>
-    );
-
-    return (
-        <main className="min-h-screen bg-black text-white flex flex-row overflow-hidden">
-            <div className="hidden lg:flex flex-[2] border-r border-white/5"><MainUI isMob={false} /></div>
-            <div className="flex-1 lg:max-w-[480px] h-screen bg-zinc-900 flex items-center justify-center p-4">
-                <div className="w-full h-full max-h-[880px] bg-black border-[12px] border-zinc-800 rounded-[3.5rem] overflow-hidden relative shadow-2xl">
-                    {view === "CANVAS" && <MainUI isMob={true} />}
-                    {view === "LOGIN" && (
-                        <div className="absolute inset-0 bg-black/95 z-[100] p-10 flex flex-col justify-center animate-in slide-in-from-bottom duration-500">
-                            <div className="flex gap-2 mb-6 justify-center">
-                                {["ES", "QU", "EN"].map(l => (
-                                    <button key={l} onClick={() => setLang(l)} className={`px-2 py-1 text-[9px] border ${lang === l ? 'border-green-500 text-green-500' : 'border-zinc-800 text-zinc-600'}`}>{l}</button>
-                                ))}
-                            </div>
-                            <div className="pt-4 mb-6 text-center">
-                                <h2 className="text-white text-xl font-black mb-4 uppercase italic leading-tight">{legal[lang].title}</h2>
-                                <p className="text-[10px] text-zinc-400 leading-relaxed text-justify">{legal[lang].body}</p>
-                            </div>
-                            <input placeholder={legal[lang].dni} value={dni} onChange={e => setDni(e.target.value)} className="w-full bg-zinc-900 border border-zinc-800 p-4 text-white text-center mb-4 outline-none focus:border-purple-500 font-mono" />
-                            <input placeholder={legal[lang].wa} value={whatsapp} onChange={e => setWhatsapp(e.target.value)} className="w-full bg-zinc-900 border border-zinc-800 p-4 text-white text-center mb-10 outline-none focus:border-green-500 font-mono" />
-                            <button onClick={handleSign} className="w-full bg-green-600 text-black font-black p-5 uppercase text-xs tracking-widest hover:bg-green-400">{legal[lang].btn}</button>
-                            <button onClick={() => setView("CANVAS")} className="mt-6 text-[9px] text-zinc-600 underline uppercase">Cancelar</button>
-                        </div>
-                    )}
-                    {view === "SUCCESS" && (
-                        <div className="absolute inset-0 bg-black z-[100] p-10 flex flex-col justify-center text-center animate-in zoom-in">
-                            <p className="text-green-500 text-5xl mb-6">✓</p>
-                            <h2 className="text-xl font-black uppercase mb-4 italic">Vínculo Sello</h2>
-                            <p className="text-xs text-zinc-500">Identidad captada en el laboratorio.</p>
-                            <button onClick={() => setView("CANVAS")} className="mt-12 text-zinc-600 underline text-[10px] uppercase">Finalizar</button>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </main>
-    );
+      </div>
+    </div>
+  )
 }
+export default App

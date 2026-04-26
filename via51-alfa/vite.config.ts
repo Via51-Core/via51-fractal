@@ -5,10 +5,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    strictPort: true,
-    host: true
-  },
-  build: {
-    target: 'esnext'
+    cors: true,
+    headers: {
+      "Content-Security-Policy": "frame-ancestors *",
+      "X-Frame-Options": "ALLOWALL"
+    }
   }
 })
