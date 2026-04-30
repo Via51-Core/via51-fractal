@@ -1,4 +1,6 @@
-﻿import { useEffect, useState } from 'react';
+﻿interface LangContent { ES: string; QU: string; EN: string; }
+interface Section { id: string; title: LangContent; content: LangContent; }
+import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -52,8 +54,8 @@ export default function Article_05_01A() {
         <main style={{ minHeight: '300px', padding: '0 20px' }}>
           <AnimatePresence mode="wait">
             <motion.div key={sectionIndex + activeLang} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
-              <h2 style={{ fontSize: '24px', fontWeight: '800', textTransform: 'uppercase', marginBottom: '40px', textAlign: 'center' }}>{sections[sectionIndex].title[activeLang]}</h2>
-              <p style={{ fontSize: '20px', fontWeight: '300', lineHeight: '1.6', textAlign: 'justify', borderLeft: '3px solid #D4AF37', paddingLeft: '35px', color: '#ccc' }}>{sections[sectionIndex].content[activeLang]}</p>
+              <h2 style={{ fontSize: '24px', fontWeight: '800', textTransform: 'uppercase', marginBottom: '40px', textAlign: 'center' }}>{(sections[sectionIndex].title as any)[activeLang]}</h2>
+              <p style={{ fontSize: '20px', fontWeight: '300', lineHeight: '1.6', textAlign: 'justify', borderLeft: '3px solid #D4AF37', paddingLeft: '35px', color: '#ccc' }}>{(sections[sectionIndex].content as any)[activeLang]}</p>
             </motion.div>
           </AnimatePresence>
         </main>
