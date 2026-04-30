@@ -1,44 +1,33 @@
-import { DismantlingGraph } from '@/components/DismantlingGraph'
-import { AbsorptionTheory } from '@/components/AbsorptionTheory'
-import { RegionalAnalysis } from '@/components/RegionalAnalysis'
-import { IntelligenceSearch } from '@/components/IntelligenceSearch'
-import { motion } from 'framer-motion'
+﻿import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+
+interface ReaderStat { region: string; total_readers: number; }
 
 export default function HoldingDashboard() {
+  const [stats, setStats] = useState<ReaderStat[]>([]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const { data } = await supabase.from('view_readers_summary').select('*');
+      if (data) setStats(data as ReaderStat[]);
+    };
+    fetchStats();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[#020202] text-white p-8 font-sans">
-      <header className="flex justify-between items-center mb-12 border-b border-v51-gold/10 pb-6">
-        <div>
-          <h1 className="text-v51-gold font-mono text-[10px] tracking-[0.6em] uppercase">Holding Sincronizado // Fase 1.5</h1>
-          <p className="text-3xl font-black tracking-tighter">REVELACIÓN DE SOBERANÍA</p>
+    <div style={{ backgroundColor: '#000', color: '#fff', minHeight: '100vh', padding: '60px' }}>
+      <h1 style={{ color: '#D4AF37', letterSpacing: '0.5em', fontSize: '12px' }}>VIA51 HOLDING // SISTEMA SOBERANO</h1>
+      <div style={{ marginTop: '40px' }}>
+        <h2 style={{ fontSize: '32px', fontWeight: '900' }}>Impacto Territorial</h2>
+        <div style={{ display: 'flex', gap: '40px', marginTop: '40px' }}>
+          {stats.map((s, i) => (
+            <div key={i}>
+              <span style={{ fontSize: '40px', fontWeight: '900', display: 'block' }}>{s.total_readers}</span>
+              <span style={{ fontSize: '10px', color: '#D4AF37' }}>{s.region}</span>
+            </div>
+          ))}
         </div>
-        <div className="text-right font-mono text-[9px] text-gray-500 uppercase">
-          Dominio: holding.via51.org <br />
-          Explorador de Datos: Activo
-        </div>
-      </header>
-
-      <main className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* LÍNEA 1: ABSORCIÓN ATÓMICA */}
-        <section className="lg:col-span-2">
-          <AbsorptionTheory />
-        </section>
-
-        {/* LÍNEA 2: PROGRESO Y BÚSQUEDA */}
-        <section className="space-y-8">
-          <DismantlingGraph />
-          <IntelligenceSearch />
-        </section>
-
-        {/* LÍNEA 3: ANÁLISIS TERRITORIAL */}
-        <section>
-          <RegionalAnalysis />
-        </section>
-      </main>
-
-      <footer className="mt-20 border-t border-white/5 pt-8 text-[8px] font-mono text-center text-gray-700 tracking-[0.5em] uppercase">
-        Antigravity Protocol // Arquitecto Renzo_8 // 2026
-      </footer>
+      </div>
     </div>
-  )
+  );
 }
