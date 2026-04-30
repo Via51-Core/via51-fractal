@@ -1,0 +1,19 @@
+﻿======================================================================
+REPORTE DE AUDITORÍA DE DATOS - VIA51
+======================================================================
+Registros detectados en Texto: 28001
+Registros capturados en CSV:   27992
+Desfase detectado:             9
+
+LÍNEAS OMITIDAS DETECTADAS:
+----------------------------------------------------------------------
+Índice: 4,070 | DNI: 72933295 | Línea Original: 4,070. 72933295 CAPUÃ?AY SIESQUEN AZUCENA DEL MILAGRO
+Índice: 5,222 | DNI: 71431120 | Línea Original: 5,222. 71431120 CHACALTANA GOMEZ CELESTE BERENIZ DE LOS MILAGROSí
+Índice: 13,839 | DNI: 71759393 | Línea Original: 13,839. 71759393 LOPEZ NINAHUANCA LEONARD DEL PIEERO SEBASTIANSí
+Índice: 14,665 | DNI: 72379532 | Línea Original: 14,665. 72379532 MANRIQUE TITO JESSICA MARIA DE LOS ANGELESSí
+Índice: 18,932 | DNI: 07824752 | Línea Original: 18,932. 07824752 PFLUCKER VERNAL MARGARITA MARIA DE GUADALUPESí
+Índice: 19,014 | DNI: 43446339 | Línea Original: 19,014. 43446339 PINEDA MACHACA BONY CRHISTOPHER FITZGERALDSí
+Índice: 23,335 | DNI: 72727988 | Línea Original: 23,335. 72727988 SANCHEZ ZAMBRANO MARIA DE FATIMA CARMEN JOSEFINSí
+Índice: 26,602 | DNI: 75001305 | Línea Original: 26,602. 75001305 VELASQUEZ SANJINEZ CRHISTOPHER EMANUEL ARXAFADSí
+Índice: 27,088 | DNI: 70425232 | Línea Original: 27,088. 70425232 VILLANUEVA BUSTAMENTE STHEPHANIE JHAMYLE ESTRELLASí
+======================================================================
